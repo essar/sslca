@@ -1,0 +1,12 @@
+# Ignore any certificate stores
+.rootca
+CA/*
+
+# Ignore any certs or keys
+*.crt
+*.key
+*.pem
+*.p12
+
+# Ignore SSL conf
+openssl.cnf
