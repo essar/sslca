@@ -1,0 +1,138 @@
+#
+# EXAMPLE CERTIFICATE GENERATION CONFIGURATION
+#
+
+# Define defaults for OpenSSL commands
+[ req ]
+default_bits           = 2048
+default_keyfile        = private.key
+distinguished_name     = req_distinguished_name
+attributes             = req_attributes
+
+[ ca ]
+
+# Default DN values
+[ req_distinguished_name ]
+countryName                    = Country Name (2 letter code)
+countryName_default            = 
+countryName_min                = 2
+countryName_max                = 2
+
+stateOrProvinceName            = State or Province Name
+stateOrProvinceName_default    = 
+
+localityName                   = Locality Name (eg, city)
+localityName_default           = 
+
+organizationName               = Organization Name
+organizationName_default       = 
+
+organizationalUnitName         = Organizational Unit Name (eg, section)
+
+commonName                     = Common Name (eg, YOUR name)
+commonName_max                 = 64
+
+emailAddress                   = Email Address
+emailAddress_max               = 40
+
+# Define common attributes
+[ req_attributes ]
+
+# Extensions added to CA certificates
+[ v3_root ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+basicConstraints       = critical,CA:true
+keyUsage               = critical,digitalSignature,cRLSign,keyCertSign
+
+[ v3_int ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+basicConstraints       = critical,CA:true,pathlen:0
+keyUsage               = critical,digitalSignature,cRLSign,keyCertSign
+
+[ v3_svr ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer:always
+basicConstraints       = CA:false
+keyUsage               = critical,digitalSignature,keyEncipherment
+extendedKeyUsage       = serverAuth
+
+[ v3_usr ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+basicConstraints       = CA:false
+keyUsage               = critical,nonRepudiation,digitalSignature,keyEncipherment
+extendedKeyUsage       = clientAuth, codeSigning, emailProtection
+
+#
+# Define CA settings
+#
+[ root_CA ]
+dir            = ../.rootca
+database       = $dir/index.txt
+new_certs_dir  = $dir/certs
+serial         = $dir/serial
+RANDFILE       = $dir/.rnd
+
+# Root key and certificate
+private_key    = $dir/root.key
+certificate    = $dir/root.crt
+
+# CRL settings
+default_crl_days = 30
+
+# Prefer SHA256 to SHA1 or MD5
+default_md       = sha256
+
+name_opt         = ca_default
+cert_opt         = ca_default
+default_days     = 3650
+policy           = policy_strict
+preserve         = no
+email_in_dn      = no                    # Don't add the email into cert DN
+copy_extensions  = none                  # Don't copy extensions from request
+
+[ int_CA ]
+dir            = ./CA
+database       = $dir/index.txt
+new_certs_dir  = $dir/certs
+serial         = $dir/serial
+RANDFILE       = $dir/.rnd
+
+# Intermediate key and certificate
+private_key    = intermediate.key
+certificate    = intermediate.crt
+
+# CRL settings
+default_crl_days = 30
+
+# Prefer SHA256 to SHA1 or MD5
+default_md     = SHA256
+
+name_opt         = ca_default
+cert_opt         = ca_default
+default_days     = 370
+policy           = policy_any
+preserve         = no
+email_in_dn      = no                    # Don't add the email into cert DN
+copy_extensions  = copy                  # Copy extensions from request
+
+
+# Default policy
+[ policy_any ]
+countryName            = supplied
+stateOrProvinceName    = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
+
+# Strict policy
+[ policy_strict ]
+countryName            = match
+stateOrProvinceName    = match
+organizationName       = match
+organizationalUnitName = optional
+commonName             = supplied
+emailAddress           = optional
